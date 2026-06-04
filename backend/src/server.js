@@ -7,14 +7,22 @@ const logger = require('./utils/logger');
 const { verificarSaude } = require('../../ai/api');
 const { pool, inicializarTabelas } = require('./database/db');
 
+const fs = require('fs');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Rota raiz
-app.get('/', (req, res) => {
+// Servir frontend (build estático)
+const publicPath = path.join(__dirname, '..', 'public');
+if (fs.existsSync(publicPath)) {
+  app.use(express.static(publicPath));
+}
+
+// Rota raiz - API info (apenas se for chamada via Accept: application/json)
+app.get('/api/info', (req, res) => {
   res.json({
     nome: 'Brasil CodeAI API',
     versao: '1.0.0',
@@ -53,6 +61,21 @@ app.get('/health', async (req, res) => {
     provider: ok ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
   });
+});
+
+// SPA fallback - qualquer rota não encontrada volta para o frontend
+app.get('*', (req, res) => {
+  const indexPath = path.join(publicPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({
+      nome: 'Brasil CodeAI API',
+      versao: '1.0.0',
+      status: 'online',
+      mensagem: 'Frontend não buildado. Rode: npm run build na raiz'
+    });
+  }
 });
 
 app.listen(PORT, '0.0.0.0', async () => {
