@@ -1,0 +1,60 @@
+{
+  "modelo_ativo": "qwen/qwen3-32b",
+  "modelos_disponiveis": [
+    {
+      "id": "qwen/qwen3-32b",
+      "nome": "Qwen 3 32B",
+      "provedor": "groq",
+      "contexto_maximo": 32768,
+      "parametros_padrao": {
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "max_tokens": 4096
+      }
+    },
+    {
+      "id": "llama-3.3-70b-versatile",
+      "nome": "Llama 3.3 70B",
+      "provedor": "groq",
+      "contexto_maximo": 32768,
+      "parametros_padrao": {
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "max_tokens": 4096
+      }
+    },
+    {
+      "id": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "nome": "Llama 4 Scout 17B",
+      "provedor": "groq",
+      "contexto_maximo": 32768,
+      "parametros_padrao": {
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "max_tokens": 4096
+      }
+    },
+    {
+      "id": "openai/gpt-oss-120b",
+      "nome": "GPT OSS 120B",
+      "provedor": "groq",
+      "contexto_maximo": 32768,
+      "parametros_padrao": {
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "max_tokens": 4096
+      }
+    },
+    {
+      "id": "llama-3.1-8b-instant",
+      "nome": "Llama 3.1 8B (Rápido)",
+      "provedor": "groq",
+      "contexto_maximo": 8192,
+      "parametros_padrao": {
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "max_tokens": 4096
+      }
+    }
+  ]
+}

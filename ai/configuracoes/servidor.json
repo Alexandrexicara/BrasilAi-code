@@ -1,0 +1,18 @@
+{
+  "ollama": {
+    "url_base": "http://localhost:11434",
+    "timeout_ms": 120000
+  },
+  "llamafile": {
+    "url_base": "http://localhost:8080",
+    "timeout_ms": 300000
+  },
+  "api": {
+    "porta": 3000,
+    "host": "0.0.0.0"
+  },
+  "logs": {
+    "diretorio": "ai/logs",
+    "nivel": "info"
+  }
+}

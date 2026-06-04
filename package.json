@@ -1,0 +1,12 @@
+{
+  "name": "brasil-codeai",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "build": "cd frontend && npm install && npm run build && cp -r dist ../backend/public",
+    "postinstall": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

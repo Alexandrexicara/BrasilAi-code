@@ -1,0 +1,25 @@
+{
+  "models": [
+    {
+      "title": "Brasil Code AI - Qwen 2.5 Coder 32B",
+      "provider": "openai",
+      "model": "qwen-2.5-coder-32b",
+      "apiBase": "http://localhost:3000/v1",
+      "apiKey": "not-needed"
+    },
+    {
+      "title": "Brasil Code AI - DeepSeek R1 32B",
+      "provider": "openai",
+      "model": "deepseek-r1-distill-qwen-32b",
+      "apiBase": "http://localhost:3000/v1",
+      "apiKey": "not-needed"
+    },
+    {
+      "title": "Brasil Code AI - Llama 3.3 70B",
+      "provider": "openai",
+      "model": "llama-3.3-70b-versatile",
+      "apiBase": "http://localhost:3000/v1",
+      "apiKey": "not-needed"
+    }
+  ]
+}
