@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Carregar .env se existir (local), senão usa env vars do sistema (Render)
+const envPath = path.join(__dirname, '..', '.env');
+require('dotenv').config({ path: envPath });
 
 const logger = require('./utils/logger');
 const { verificarSaude } = require('../../ai/api');
@@ -80,6 +82,12 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', async () => {
   logger.info(`Servidor IA iniciado na porta ${PORT}`);
+
+  // Debug env vars (não mostra valores, só se estão configuradas)
+  logger.info(`GROQ_API_KEY: ${process.env.GROQ_API_KEY ? '✓ configurada' : '✗ NÃO configurada'}`);
+  logger.info(`JWT_SECRET: ${process.env.JWT_SECRET ? '✓ configurado' : '✗ NÃO configurado'}`);
+  logger.info(`DATABASE_URL: ${process.env.DATABASE_URL ? '✓ configurada' : '✗ NÃO configurada'}`);
+  logger.info(`Frontend build: ${fs.existsSync(path.join(__dirname, '..', 'public', 'index.html')) ? '✓ encontrado' : '✗ não buildado'}`);
 
   if (process.env.DATABASE_URL) {
     try {
