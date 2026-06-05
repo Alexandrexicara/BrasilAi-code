@@ -123,19 +123,14 @@ const adminController = {
   // Gerar API Key para usuário
   async gerarApiKey(req, res) {
     try {
-      const { userId, name } = req.body;
-      
-      // Verifica se usuário existe
-      const user = await db.pool.query('SELECT id FROM users WHERE id = $1', [userId]);
-      if (!user.rows[0]) {
-        return res.status(404).json({ error: 'Usuário não encontrado' });
-      }
+      const userId = req.userId; // Admin logado
+      const { name } = req.body;
 
       // Gera a key
       const apiKey = 'sk-' + require('crypto').randomBytes(32).toString('hex');
       const result = await db.pool.query(
         'INSERT INTO api_keys (user_id, api_key, name) VALUES ($1, $2, $3) RETURNING *',
-        [userId, apiKey, name || 'Key Admin']
+        [userId, apiKey, name || 'Key Admin Testes']
       );
       res.json({ api_key: result.rows[0].api_key });
     } catch (err) {

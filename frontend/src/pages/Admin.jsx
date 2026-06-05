@@ -66,14 +66,10 @@ export default function Admin() {
   };
 
   const handleGerarKey = async () => {
-    if (!selectedUserId) {
-      alert('Selecione um usuário');
-      return;
-    }
     try {
       const token = localStorage.getItem('token');
       const { data } = await api.post('/admin/gerar-key', 
-        { userId: parseInt(selectedUserId), name: keyName || 'Key Admin' },
+        { name: keyName || 'Key Admin Testes' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNovaKey(data.api_key);
@@ -207,17 +203,7 @@ export default function Admin() {
           {tab === 'apikeys' && (
             <div>
               <div style={styles.generateForm}>
-                <h3>Gerar API Key para Usuário</h3>
-                <select 
-                  value={selectedUserId} 
-                  onChange={(e) => setSelectedUserId(e.target.value)}
-                  style={styles.input}
-                >
-                  <option value="">Selecione um usuário</option>
-                  {usuarios.map(u => (
-                    <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-                  ))}
-                </select>
+                <h3>🔑 Gerar API Key para Admin (Testes)</h3>
                 <input
                   type="text"
                   placeholder="Nome da Key (opcional)"
@@ -226,7 +212,7 @@ export default function Admin() {
                   style={styles.input}
                 />
                 <button onClick={handleGerarKey} style={styles.btnGenerate}>
-                  🔑 Gerar API Key
+                  🔑 Gerar Minha API Key
                 </button>
               </div>
 
