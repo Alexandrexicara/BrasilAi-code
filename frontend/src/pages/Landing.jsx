@@ -59,6 +59,42 @@ export default function Landing() {
         </div>
       </section>
 
+      <section style={styles.compatible}>
+        <h2 style={styles.sectionTitle}>Compatível com</h2>
+        <div style={styles.compatibleGrid}>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>💻</span>
+            <h3>VS Code + Continue</h3>
+            <p>Instale Continue e configure com nossa API</p>
+          </div>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>🤖</span>
+            <h3>VS Code + Cline</h3>
+            <p>Agente AI completo no seu editor</p>
+          </div>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>🌊</span>
+            <h3>Windsurf</h3>
+            <p>Suporte nativo a OpenAI Compatible</p>
+          </div>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>⚡</span>
+            <h3>Cursor</h3>
+            <p>Adicione como modelo customizado</p>
+          </div>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>🧩</span>
+            <h3>CodeGPT</h3>
+            <p>Extensão popular do VS Code</p>
+          </div>
+          <div style={styles.compatibleCard}>
+            <span style={styles.compatibleIcon}>🔧</span>
+            <h3>Qualquer IDE</h3>
+            <p>Que suporte OpenAI Compatible API</p>
+          </div>
+        </div>
+      </section>
+
       <section id="precos" style={styles.pricing}>
         <h2 style={styles.sectionTitle}>Planos</h2>
         <div style={styles.priceGrid}>
@@ -139,6 +175,10 @@ const styles = {
   features: { padding: '60px 0' },
   featureGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '24px' },
   featureCard: { padding: '24px', background: C.bgCard, borderRadius: '8px', borderLeft: `4px solid ${C.orange}` },
+  compatible: { padding: '60px 0', background: '#222' },
+  compatibleGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px' },
+  compatibleCard: { padding: '20px', background: C.bgCard, borderRadius: '8px', textAlign: 'center', border: `1px solid ${C.orange}30` },
+  compatibleIcon: { fontSize: '36px', display: 'block', marginBottom: '8px' },
   pricing: { padding: '60px 0', textAlign: 'center' },
   priceGrid: { display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '24px', flexWrap: 'wrap' },
   priceCard: { padding: '32px', background: C.bgCard, border: `1px solid ${C.orange}`, borderRadius: '12px', minWidth: '260px', textAlign: 'center', color: C.text },
