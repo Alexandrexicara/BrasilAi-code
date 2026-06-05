@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Adiciona colunas se não existirem (migração)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
+
 CREATE TABLE IF NOT EXISTS plans (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
