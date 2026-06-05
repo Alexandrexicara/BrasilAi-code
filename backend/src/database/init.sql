@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Migração: remove coluna 'senha' se existir (era nome antigo)
+ALTER TABLE users DROP COLUMN IF EXISTS senha;
+
 -- Adiciona colunas se não existirem (migração)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user';
