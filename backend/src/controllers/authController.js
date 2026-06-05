@@ -33,6 +33,14 @@ const authController = {
       }
 
       const user = await User.create(name.trim(), email.toLowerCase().trim(), password);
+      
+      // Primeiro usuário vira admin automaticamente
+      const userCount = await db.pool.query('SELECT COUNT(*) FROM users');
+      if (parseInt(userCount.rows[0].count) === 1) {
+        await db.pool.query('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id]);
+        user.role = 'admin';
+      }
+      
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
       res.status(201).json({ user, token });

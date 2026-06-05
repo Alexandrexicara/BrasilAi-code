@@ -24,6 +24,7 @@ export default function Dashboard() {
         <div>
           <Link to="/plans" style={styles.link}>Planos</Link>
           <Link to="/apikeys" style={styles.link}>API Keys</Link>
+          <Link to="/admin" style={styles.adminLink}>🔐 Admin</Link>
           <button onClick={handleLogout} style={styles.logout}>Sair</button>
         </div>
       </nav>
@@ -41,9 +42,10 @@ export default function Dashboard() {
 }
 
 const styles = {
-  container: { padding: '20px', fontFamily: 'system-ui, sans-serif' },
+  container: { padding: '20px', fontFamily: 'system-ui, sans-serif', background: '#1c1c1c', minHeight: '100vh', color: '#e0e0e0' },
   nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '2px solid #FF6600', paddingBottom: '12px' },
   link: { marginRight: '16px', color: '#FF6600', textDecoration: 'none', fontWeight: 'bold' },
+  adminLink: { marginRight: '16px', color: '#39FF14', textDecoration: 'none', fontWeight: 'bold' },
   logout: { background: 'none', border: 'none', color: '#666', cursor: 'pointer' },
-  card: { padding: '20px', border: '1px solid #FF6600', borderRadius: '8px', marginBottom: '16px' },
+  card: { padding: '20px', background: '#2a2a2a', border: '1px solid #FF6600', borderRadius: '8px', marginBottom: '16px' },
 };

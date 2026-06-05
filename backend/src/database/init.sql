@@ -28,11 +28,13 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(150),
     email VARCHAR(255) UNIQUE,
     password_hash TEXT,
+    role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Adiciona colunas se não existirem (migração)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user';
 
 CREATE TABLE IF NOT EXISTS plans (
     id SERIAL PRIMARY KEY,

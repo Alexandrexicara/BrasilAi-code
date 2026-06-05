@@ -54,6 +54,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/api-keys', require('./routes/apiKeys'));
 app.use('/subscriptions', require('./routes/subscriptions'));
 app.use('/plans', require('./routes/plans'));
+app.use('/admin', require('./routes/adminRoutes'));
 
 // Health check
 app.get('/health', async (req, res) => {
