@@ -2,7 +2,15 @@ const { temDatabase, pool } = require('../database/db');
 const { verificarAssinatura } = require('../services/subscription');
 
 const authApiKey = async (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
+  // Suporta ambos os formatos: x-api-key e Authorization: Bearer
+  let apiKey = req.headers['x-api-key'];
+  
+  if (!apiKey) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      apiKey = authHeader.replace('Bearer ', '');
+    }
+  }
 
   if (!apiKey) {
     return res.status(401).json({ error: 'API Key obrigatória' });
