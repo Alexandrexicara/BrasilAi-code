@@ -8,6 +8,7 @@ require('dotenv').config({ path: envPath });
 const logger = require('./utils/logger');
 const { verificarSaude } = require('../../ai/api');
 const { pool, inicializarTabelas } = require('./database/db');
+const criarAdminPadrao = require('./database/criarAdmin');
 
 const fs = require('fs');
 
@@ -94,6 +95,9 @@ app.listen(PORT, '0.0.0.0', async () => {
     try {
       await inicializarTabelas();
       logger.info('PostgreSQL conectado - tabelas inicializadas');
+      
+      // Cria admin padrão se configurado
+      await criarAdminPadrao();
     } catch (err) {
       logger.warn('PostgreSQL offline - rodando sem banco', { erro: err.message });
     }
