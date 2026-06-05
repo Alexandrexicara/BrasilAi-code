@@ -7,7 +7,11 @@ export default function Admin() {
   const [dashboard, setDashboard] = useState({});
   const [usuarios, setUsuarios] = useState([]);
   const [assinaturas, setAssinaturas] = useState([]);
+  const [apiKeys, setApiKeys] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [keyName, setKeyName] = useState('');
+  const [novaKey, setNovaKey] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +39,9 @@ export default function Admin() {
       } else if (tab === 'assinaturas') {
         const { data } = await api.get('/admin/assinaturas', config);
         setAssinaturas(data);
+      } else if (tab === 'apikeys') {
+        const { data } = await api.get('/admin/api-keys', config);
+        setApiKeys(data);
       }
     } catch (err) {
       if (err.response?.status === 403) {
@@ -58,6 +65,30 @@ export default function Admin() {
     }
   };
 
+  const handleGerarKey = async () => {
+    if (!selectedUserId) {
+      alert('Selecione um usuário');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await api.post('/admin/gerar-key', 
+        { userId: parseInt(selectedUserId), name: keyName || 'Key Admin' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNovaKey(data.api_key);
+      alert('API Key gerada com sucesso!');
+      carregarDados();
+    } catch (err) {
+      alert('Erro: ' + (err.response?.data?.error || err.message));
+    }
+  };
+
+  const copiarKey = () => {
+    navigator.clipboard.writeText(novaKey);
+    alert('API Key copiada!');
+  };
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
@@ -70,6 +101,7 @@ export default function Admin() {
           { id: 'dashboard', label: '📊 Dashboard' },
           { id: 'usuarios', label: '👥 Usuários' },
           { id: 'assinaturas', label: '💳 Assinaturas' },
+          { id: 'apikeys', label: '🔑 API Keys' },
         ].map(t => (
           <button
             key={t.id}
@@ -171,6 +203,70 @@ export default function Admin() {
               </tbody>
             </table>
           )}
+
+          {tab === 'apikeys' && (
+            <div>
+              <div style={styles.generateForm}>
+                <h3>Gerar API Key para Usuário</h3>
+                <select 
+                  value={selectedUserId} 
+                  onChange={(e) => setSelectedUserId(e.target.value)}
+                  style={styles.input}
+                >
+                  <option value="">Selecione um usuário</option>
+                  {usuarios.map(u => (
+                    <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Nome da Key (opcional)"
+                  value={keyName}
+                  onChange={(e) => setKeyName(e.target.value)}
+                  style={styles.input}
+                />
+                <button onClick={handleGerarKey} style={styles.btnGenerate}>
+                  🔑 Gerar API Key
+                </button>
+              </div>
+
+              {novaKey && (
+                <div style={styles.newKeyBox}>
+                  <h4>✅ API Key Gerada:</h4>
+                  <code style={styles.keyText}>{novaKey}</code>
+                  <button onClick={copiarKey} style={styles.btnCopy}>📋 Copiar</button>
+                </div>
+              )}
+
+              <h3 style={{ marginTop: '30px' }}>Todas as API Keys</h3>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Nome</th>
+                    <th>Key</th>
+                    <th>Status</th>
+                    <th>Criada em</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apiKeys.map(k => (
+                    <tr key={k.id}>
+                      <td>{k.id}</td>
+                      <td>{k.usuario}</td>
+                      <td>{k.email}</td>
+                      <td>{k.name}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '12px' }}>{k.api_key.substring(0, 20)}...</td>
+                      <td>{k.active ? '✅ Ativa' : '❌ Inativa'}</td>
+                      <td>{new Date(k.created_at).toLocaleDateString('pt-BR')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -197,4 +293,10 @@ const styles = {
     background: status === 'ativo' ? '#1a4a1a' : status === 'vence_logo' ? '#4a3a1a' : '#4a1a1a',
     color: status === 'ativo' ? '#39FF14' : status === 'vence_logo' ? '#FF6600' : '#ff4444',
   }),
+  generateForm: { padding: '30px', background: '#2a2a2a', margin: '20px 30px', borderRadius: '8px', border: '1px solid #FF6600' },
+  input: { padding: '10px', margin: '8px', background: '#1c1c1c', color: '#e0e0e0', border: '1px solid #555', borderRadius: '6px', fontSize: '14px' },
+  btnGenerate: { padding: '10px 20px', background: '#39FF14', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginLeft: '8px' },
+  newKeyBox: { padding: '20px', background: '#1a4a1a', margin: '20px 30px', borderRadius: '8px', border: '2px solid #39FF14' },
+  keyText: { display: 'block', padding: '12px', background: '#000', color: '#39FF14', borderRadius: '6px', fontFamily: 'monospace', fontSize: '14px', margin: '10px 0', wordBreak: 'break-all' },
+  btnCopy: { padding: '8px 16px', background: '#FF6600', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' },
 };

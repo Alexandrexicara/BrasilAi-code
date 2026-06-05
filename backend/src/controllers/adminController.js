@@ -101,6 +101,46 @@ const adminController = {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  },
+
+  // Listar todas as API Keys
+  async listarApiKeys(req, res) {
+    try {
+      const result = await db.pool.query(`
+        SELECT 
+          ak.id, ak.api_key, ak.name, ak.active, ak.created_at,
+          u.name as usuario, u.email
+        FROM api_keys ak
+        JOIN users u ON ak.user_id = u.id
+        ORDER BY ak.created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  // Gerar API Key para usuário
+  async gerarApiKey(req, res) {
+    try {
+      const { userId, name } = req.body;
+      
+      // Verifica se usuário existe
+      const user = await db.pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+      if (!user.rows[0]) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+
+      // Gera a key
+      const apiKey = 'sk-' + require('crypto').randomBytes(32).toString('hex');
+      const result = await db.pool.query(
+        'INSERT INTO api_keys (user_id, api_key, name) VALUES ($1, $2, $3) RETURNING *',
+        [userId, apiKey, name || 'Key Admin']
+      );
+      res.json({ api_key: result.rows[0].api_key });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
