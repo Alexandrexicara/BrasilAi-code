@@ -69,6 +69,10 @@ const authController = {
         return res.status(401).json({ error: 'Credenciais inválidas' });
       }
 
+      if (!user.password_hash) {
+        return res.status(500).json({ error: 'Conta com configuração inválida. Contate o suporte.' });
+      }
+
       const match = await bcrypt.compare(password, user.password_hash);
       if (!match) {
         return res.status(401).json({ error: 'Credenciais inválidas' });

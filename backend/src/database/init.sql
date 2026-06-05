@@ -23,21 +23,17 @@ CREATE INDEX IF NOT EXISTS idx_logs_modelo ON logs_requisicoes(modelo);
 -- FUTURO: Tabelas do SaaS
 -- =========================================
 
-CREATE TABLE IF NOT EXISTS users (
+-- Dropa tabela users se existir (para recriar com schema correto)
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150),
-    email VARCHAR(255) UNIQUE,
-    password_hash TEXT,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
     role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP DEFAULT NOW()
 );
-
--- Migração: remove coluna 'senha' se existir (era nome antigo)
-ALTER TABLE users DROP COLUMN IF EXISTS senha;
-
--- Adiciona colunas se não existirem (migração)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user';
 
 CREATE TABLE IF NOT EXISTS plans (
     id SERIAL PRIMARY KEY,
