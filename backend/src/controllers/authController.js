@@ -38,7 +38,7 @@ const authController = {
       res.status(201).json({ user, token });
     } catch (err) {
       console.error('Erro no registro:', err);
-      res.status(500).json({ error: 'Erro interno ao cadastrar. Tente novamente.' });
+      res.status(500).json({ error: `Erro interno ao cadastrar: ${err.message}` });
     }
   },
 
@@ -70,7 +70,7 @@ const authController = {
       res.json({ user: { id: user.id, name: user.name, email: user.email }, token });
     } catch (err) {
       console.error('Erro no login:', err);
-      res.status(500).json({ error: 'Erro interno ao fazer login. Tente novamente.' });
+      res.status(500).json({ error: `Erro interno ao fazer login: ${err.message}` });
     }
   }
 };
