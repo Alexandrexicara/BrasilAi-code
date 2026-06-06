@@ -5,9 +5,9 @@ const temDatabase = !!process.env.DATABASE_URL;
 const pool = temDatabase
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL?.includes('neon') || process.env.DATABASE_URL?.includes('render')
-        ? { rejectUnauthorized: false }
-        : false,
+      ssl: process.env.DATABASE_URL?.includes('localhost') || process.env.DATABASE_URL?.includes('127.0.0.1')
+        ? false
+        : { rejectUnauthorized: false },
     })
   : null;
 
