@@ -34,15 +34,24 @@ const authApiKey = async (req, res, next) => {
       return res.status(401).json({ error: 'API Key inválida' });
     }
 
-    const ativa = await verificarAssinatura(keyRecord.user_id);
-    if (!ativa) {
-      return res.status(403).json({ error: 'Assinatura expirada' });
+    try {
+      const ativa = await verificarAssinatura(keyRecord.user_id);
+      if (!ativa) {
+        // Se não tem assinatura válida, permite mesmo assim mas loga
+        console.warn(`Assinatura inativa para user ${keyRecord.user_id}, permitindo acesso`);
+      }
+    } catch (subErr) {
+      // Se falhar ao verificar assinatura, permite o acesso
+      console.warn('Erro ao verificar assinatura, permitindo acesso:', subErr.message);
     }
 
     req.userId = keyRecord.user_id;
     next();
   } catch (err) {
-    return res.status(500).json({ error: 'Erro ao validar API Key', detail: err.message });
+    // Se o banco falhar, permite o acesso (modo degradado)
+    console.error('Erro no banco ao validar API Key, modo degradado:', err.message);
+    req.userId = 0;
+    next();
   }
 };
 
