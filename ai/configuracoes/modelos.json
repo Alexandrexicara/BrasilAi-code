@@ -1,5 +1,5 @@
 {
-  "modelo_ativo": "llama-3.1-8b-instant",
+  "modelo_ativo": "meta-llama/llama-4-scout-17b-16e-instruct",
   "modelos_disponiveis": [
     {
       "id": "qwen/qwen3-32b",

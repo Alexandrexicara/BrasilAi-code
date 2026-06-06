@@ -1,5 +1,5 @@
 const GROQ_URL = 'https://api.groq.com/openai/v1';
-const LIMITE_TOKENS_PROMPT = 4500; // reservar tokens para resposta (limite free: 6000 TPM)
+const LIMITE_TOKENS_PROMPT = 3500; // reservar tokens para resposta (limite free: 6000 TPM)
 
 function obterApiKey() {
   return process.env.GROQ_API_KEY || '';
@@ -60,7 +60,7 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
 
   // Trunca mensagens se exceder limite de tokens do free tier
   const mensagensTratadas = truncarMensagens(mensagens, LIMITE_TOKENS_PROMPT);
-  const maxTokensResposta = Math.min(parametros.max_tokens ?? 2048, 2048);
+  const maxTokensResposta = Math.min(parametros.max_tokens ?? 1024, 1500);
 
   const resposta = await fetch(`${GROQ_URL}/chat/completions`, {
     method: 'POST',
