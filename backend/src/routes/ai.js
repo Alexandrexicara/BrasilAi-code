@@ -16,8 +16,9 @@ router.post('/v1/chat/completions', async (req, res) => {
   }
 
   try {
+    const modeloLimpo = (model || obterModeloAtivo()).trim();
     const resultado = await executarChat(messages, {
-      modelo: model || obterModeloAtivo(),
+      modelo: modeloLimpo,
       temperature: temperature ?? 0.2,
       max_tokens: max_tokens ?? 4096,
     });
@@ -63,7 +64,7 @@ router.post('/v1/chat/completions', async (req, res) => {
     logger.error('Erro no chat completion', { erro: err.message });
 
     res.status(500).json({
-      error: 'Erro ao processar requisição',
+      error: `Erro ao processar requisição: ${err.message}`,
       detail: err.message,
     });
   }
