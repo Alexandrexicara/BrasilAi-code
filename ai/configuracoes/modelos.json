@@ -1,5 +1,5 @@
 {
-  "modelo_ativo": "qwen/qwen3-32b",
+  "modelo_ativo": "llama-3.1-8b-instant",
   "modelos_disponiveis": [
     {
       "id": "qwen/qwen3-32b",
