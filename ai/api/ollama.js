@@ -58,10 +58,11 @@ async function listarModelos() {
 
 async function verificarSaude() {
   try {
-    const resposta = await fetch(`${OLLAMA_URL}/api/tags`, { signal: AbortSignal.timeout(5000) });
-    return resposta.ok;
-  } catch {
-    return false;
+    const resposta = await fetch(`${OLLAMA_URL}/api/tags`, { signal: AbortSignal.timeout(15000) });
+    if (!resposta.ok) return { ok: false, erro: `Ollama retornou status ${resposta.status}` };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, erro: e.message };
   }
 }
 

@@ -53,14 +53,17 @@ async function listarModelos() {
 async function verificarSaude() {
   try {
     const apiKey = obterApiKey();
-    if (!apiKey) return false;
+    if (!apiKey) return { ok: false, erro: 'GROQ_API_KEY não configurada' };
     const resposta = await fetch(`${GROQ_URL}/models`, {
       headers: { 'Authorization': `Bearer ${apiKey}` },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(15000),
     });
-    return resposta.ok;
-  } catch {
-    return false;
+    if (!resposta.ok) {
+      return { ok: false, erro: `Groq retornou status ${resposta.status}` };
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, erro: e.message };
   }
 }
 

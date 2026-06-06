@@ -59,10 +59,12 @@ app.use('/admin', require('./routes/adminRoutes'));
 
 // Health check
 app.get('/health', async (req, res) => {
-  const ok = await verificarSaude();
+  const resultado = await verificarSaude();
+  const ok = resultado.ok === true;
   res.json({
     status: ok ? 'ok' : 'degraded',
     provider: ok ? 'connected' : 'disconnected',
+    erro: ok ? null : (resultado.erro || 'desconhecido'),
     timestamp: new Date().toISOString(),
   });
 });

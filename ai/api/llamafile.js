@@ -59,11 +59,12 @@ async function listarModelos() {
 async function verificarSaude() {
   try {
     const resposta = await fetch(`${LLAMAFILE_URL}/v1/models`, {
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(15000),
     });
-    return resposta.ok;
-  } catch {
-    return false;
+    if (!resposta.ok) return { ok: false, erro: `Llamafile retornou status ${resposta.status}` };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, erro: e.message };
   }
 }
 
