@@ -4,7 +4,26 @@ import api from '../services/api';
 
 export default function Dashboard() {
   const [sub, setSub] = useState(null);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+
+  const configYaml = `name: Brasil CodeAI
+version: 1.0.0
+schema: v1
+models:
+  - name: Brasil CodeAI
+    provider: openai
+    model: meta-llama/llama-4-scout-17b-16e-instruct
+    apiBase: https://brasil-codeai.onrender.com/v1
+    apiKey: COLE_SUA_API_KEY_AQUI
+    requestOptions:
+      timeout: 120000`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(configYaml);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     api.get('/subscription/status')
@@ -37,6 +56,26 @@ export default function Dashboard() {
           <p>Carregando...</p>
         )}
       </div>
+
+      <div style={styles.card}>
+        <h3>⚡ Configurar no VSCode com Continue</h3>
+        <ol style={styles.steps}>
+          <li>Instale a extensão <strong>Continue</strong> no VSCode (Ctrl+Shift+X → busque "Continue")</li>
+          <li>Pressione <strong>Ctrl+Shift+P</strong> → digite <strong>Continue: Open Config</strong></li>
+          <li>Apague tudo e cole o config abaixo</li>
+          <li>Substitua <strong>COLE_SUA_API_KEY_AQUI</strong> pela sua API Key (vá em <Link to="/apikeys" style={styles.link}>API Keys</Link>)</li>
+          <li>Salve (Ctrl+S) e recarregue o VSCode (Ctrl+Shift+P → Reload Window)</li>
+        </ol>
+        <div style={styles.codeBlock}>
+          <div style={styles.codeHeader}>
+            <span>config.yaml</span>
+            <button onClick={handleCopy} style={styles.copyBtn}>
+              {copied ? '✅ Copiado!' : '📋 Copiar'}
+            </button>
+          </div>
+          <pre style={styles.code}>{configYaml}</pre>
+        </div>
+      </div>
     </div>
   );
 }
@@ -48,4 +87,9 @@ const styles = {
   adminLink: { marginRight: '16px', color: '#39FF14', textDecoration: 'none', fontWeight: 'bold' },
   logout: { background: 'none', border: 'none', color: '#666', cursor: 'pointer' },
   card: { padding: '20px', background: '#2a2a2a', border: '1px solid #FF6600', borderRadius: '8px', marginBottom: '16px' },
+  steps: { lineHeight: '2', paddingLeft: '20px' },
+  codeBlock: { background: '#1a1a1a', borderRadius: '6px', border: '1px solid #444', marginTop: '12px', overflow: 'hidden' },
+  codeHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#333', borderBottom: '1px solid #444' },
+  copyBtn: { background: '#FF6600', color: '#fff', border: 'none', borderRadius: '4px', padding: '6px 14px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' },
+  code: { padding: '12px', margin: 0, fontSize: '13px', overflowX: 'auto', whiteSpace: 'pre', color: '#39FF14' },
 };
