@@ -4,7 +4,7 @@ import api from '../services/api';
 
 export default function Dashboard() {
   const [sub, setSub] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState('');
   const navigate = useNavigate();
 
   const configYaml = `name: Brasil CodeAI
@@ -19,10 +19,14 @@ models:
     requestOptions:
       timeout: 120000`;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(configYaml);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const clineConfig = `Base URL: https://brasil-codeai.onrender.com/v1
+API Key: COLE_SUA_API_KEY_AQUI
+Model ID: meta-llama/llama-4-scout-17b-16e-instruct`;
+
+  const handleCopy = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(''), 2000);
   };
 
   useEffect(() => {
@@ -58,7 +62,7 @@ models:
       </div>
 
       <div style={styles.card}>
-        <h3>⚡ Configurar no VSCode com Continue</h3>
+        <h3>⚡ Configurar no VSCode com Continue (Chat e Autocomplete)</h3>
         <ol style={styles.steps}>
           <li>Instale a extensão <strong>Continue</strong> no VSCode (Ctrl+Shift+X → busque "Continue")</li>
           <li>Pressione <strong>Ctrl+Shift+P</strong> → digite <strong>Continue: Open Config</strong></li>
@@ -69,12 +73,32 @@ models:
         <div style={styles.codeBlock}>
           <div style={styles.codeHeader}>
             <span>config.yaml</span>
-            <button onClick={handleCopy} style={styles.copyBtn}>
-              {copied ? '✅ Copiado!' : '📋 Copiar'}
+            <button onClick={() => handleCopy(configYaml, 'continue')} style={styles.copyBtn}>
+              {copied === 'continue' ? '✅ Copiado!' : '📋 Copiar'}
             </button>
           </div>
           <pre style={styles.code}>{configYaml}</pre>
         </div>
+      </div>
+
+      <div style={styles.card}>
+        <h3>🤖 Configurar no VSCode com Cline (Agente Autônomo)</h3>
+        <ol style={styles.steps}>
+          <li>Instale a extensão <strong>Cline</strong> no VSCode (Ctrl+Shift+X → busque "Cline")</li>
+          <li>Abra o Cline e clique na <strong>engrenagem</strong> (⚙️)</li>
+          <li>Em <strong>API Provider</strong> selecione: <strong>OpenAI Compatible</strong></li>
+          <li>Preencha os campos abaixo:</li>
+        </ol>
+        <div style={styles.codeBlock}>
+          <div style={styles.codeHeader}>
+            <span>Configuração Cline</span>
+            <button onClick={() => handleCopy(clineConfig, 'cline')} style={styles.copyBtn}>
+              {copied === 'cline' ? '✅ Copiado!' : '📋 Copiar'}
+            </button>
+          </div>
+          <pre style={styles.code}>{clineConfig}</pre>
+        </div>
+        <p style={styles.note}>⚠️ O Cline é um agente autônomo: lê arquivos, edita código e executa comandos. Escolha o idioma da sua API Key na página <Link to="/apikeys" style={styles.link}>API Keys</Link></p>
       </div>
     </div>
   );
@@ -92,4 +116,5 @@ const styles = {
   codeHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#333', borderBottom: '1px solid #444' },
   copyBtn: { background: '#FF6600', color: '#fff', border: 'none', borderRadius: '4px', padding: '6px 14px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' },
   code: { padding: '12px', margin: 0, fontSize: '13px', overflowX: 'auto', whiteSpace: 'pre', color: '#39FF14' },
+  note: { marginTop: '12px', fontSize: '13px', color: '#FF6600', fontStyle: 'italic' },
 };
