@@ -1,5 +1,5 @@
 const GROQ_URL = 'https://api.groq.com/openai/v1';
-const LIMITE_TOKENS_PROMPT = 3500; // reservar tokens para resposta (limite free: 6000 TPM)
+const LIMITE_TOKENS_PROMPT = 20000; // Llama 4 Scout tem 30.000 TPM free
 
 function obterApiKey() {
   return process.env.GROQ_API_KEY || '';
@@ -60,7 +60,7 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
 
   // Trunca mensagens se exceder limite de tokens do free tier
   const mensagensTratadas = truncarMensagens(mensagens, LIMITE_TOKENS_PROMPT);
-  const maxTokensResposta = Math.min(parametros.max_tokens ?? 1024, 1500);
+  const maxTokensResposta = Math.min(parametros.max_tokens ?? 4096, 8000);
 
   const resposta = await fetch(`${GROQ_URL}/chat/completions`, {
     method: 'POST',
@@ -84,8 +84,29 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
   const dados = await resposta.json();
   const choice = dados.choices?.[0];
 
+  // Extrai conteúdo - verifica content e tool_calls
+  let conteudo = choice?.message?.content || '';
+  
+  // Se content vier vazio mas tem tool_calls, formata como texto
+  if (!conteudo && choice?.message?.tool_calls?.length) {
+    conteudo = choice.message.tool_calls
+      .map(tc => {
+        const args = typeof tc.function?.arguments === 'string'
+          ? tc.function.arguments
+          : JSON.stringify(tc.function?.arguments || {});
+        return `${tc.function?.name || 'call'}: ${args}`;
+      })
+      .join('\n');
+  }
+
+  // Se ainda estiver vazio, retorna mensagem de erro útil
+  if (!conteudo) {
+    console.warn('Resposta vazia da Groq:', JSON.stringify(dados).substring(0, 500));
+    conteudo = 'Desculpe, não consegui gerar uma resposta. Tente reformular sua pergunta.';
+  }
+
   return {
-    conteudo: choice?.message?.content || '',
+    conteudo: conteudo,
     modelo: dados.model || modelo,
     tokens_total: dados.usage?.total_tokens || 0,
     tokens_prompt: dados.usage?.prompt_tokens || 0,
