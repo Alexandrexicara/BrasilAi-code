@@ -2,6 +2,17 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 
+const IDIOMAS = [
+  { code: 'pt-BR', label: '🇧🇷 Português' },
+  { code: 'en', label: '🇺🇸 English' },
+  { code: 'es', label: '🇪🇸 Español' },
+  { code: 'fr', label: '🇫🇷 Français' },
+  { code: 'de', label: '🇩🇪 Deutsch' },
+  { code: 'it', label: '🇮🇹 Italiano' },
+  { code: 'ja', label: '🇯🇵 日本語' },
+  { code: 'zh', label: '🇨🇳 中文' },
+];
+
 export default function APIKeys() {
   const [keys, setKeys] = useState([]);
   const [message, setMessage] = useState('');
@@ -27,6 +38,16 @@ export default function APIKeys() {
     fetchKeys();
   };
 
+  const handleLanguage = async (id, language) => {
+    try {
+      await api.put(`/apikeys/${id}/language`, { language });
+      setMessage(`✅ Idioma atualizado!`);
+      fetchKeys();
+    } catch {
+      setMessage('❌ Erro ao atualizar idioma');
+    }
+  };
+
   return (
     <div style={styles.container}>
       <Link to="/dashboard" style={styles.back}>← Voltar</Link>
@@ -37,6 +58,15 @@ export default function APIKeys() {
         {keys.map((key) => (
           <div key={key.id} style={styles.card}>
             <code style={styles.code}>{key.api_key}</code>
+            <select
+              value={key.language || 'pt-BR'}
+              onChange={(e) => handleLanguage(key.id, e.target.value)}
+              style={styles.select}
+            >
+              {IDIOMAS.map((lang) => (
+                <option key={lang.code} value={lang.code}>{lang.label}</option>
+              ))}
+            </select>
             <span>{key.active ? '✅ Ativa' : '❌ Revogada'}</span>
             <button onClick={() => handleRevoke(key.id)} style={styles.revoke}>Revogar</button>
           </div>
@@ -54,4 +84,5 @@ const styles = {
   card: { padding: '12px', border: '1px solid #FF6600', borderRadius: '6px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' },
   code: { flex: 1, fontSize: '12px', color: '#333' },
   revoke: { padding: '6px 12px', background: '#CC0000', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  select: { padding: '6px 10px', borderRadius: '4px', border: '1px solid #FF6600', background: '#2a2a2a', color: '#e0e0e0', cursor: 'pointer', fontSize: '13px' },
 };

@@ -19,6 +19,7 @@ const authApiKey = async (req, res, next) => {
   // Modo sem banco: aceita qualquer API key (para testes)
   if (!temDatabase) {
     req.userId = 0;
+    req.userLanguage = 'pt-BR';
     return next();
   }
 
@@ -46,11 +47,13 @@ const authApiKey = async (req, res, next) => {
     }
 
     req.userId = keyRecord.user_id;
+    req.userLanguage = keyRecord.language || 'pt-BR';
     next();
   } catch (err) {
     // Se o banco falhar, permite o acesso (modo degradado)
     console.error('Erro no banco ao validar API Key, modo degradado:', err.message);
     req.userId = 0;
+    req.userLanguage = 'pt-BR';
     next();
   }
 };

@@ -26,6 +26,26 @@ const apiKeyController = {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  },
+
+  async atualizarIdioma(req, res) {
+    try {
+      const { language } = req.body;
+      const idiomasValidos = ['pt-BR', 'en', 'es', 'fr', 'de', 'it', 'ja', 'zh'];
+      if (!idiomasValidos.includes(language)) {
+        return res.status(400).json({ error: `Idioma inválido. Opções: ${idiomasValidos.join(', ')}` });
+      }
+      const db = require('../database/db');
+      if (db.temDatabase) {
+        await db.pool.query(
+          'UPDATE api_keys SET language = $1 WHERE id = $2 AND user_id = $3',
+          [language, req.params.id, req.userId]
+        );
+      }
+      res.json({ message: 'Idioma atualizado', language });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 

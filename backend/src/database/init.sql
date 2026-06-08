@@ -32,6 +32,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role VARCHAR(20) DEFAULT 'user',
+    language VARCHAR(10) DEFAULT 'pt-BR',
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -56,6 +57,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
     user_id INTEGER REFERENCES users(id),
     api_key TEXT UNIQUE,
     name VARCHAR(100),
+    language VARCHAR(10) DEFAULT 'pt-BR',
     active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW()
 );
