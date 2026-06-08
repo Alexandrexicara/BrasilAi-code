@@ -1,5 +1,5 @@
 const GROQ_URL = 'https://api.groq.com/openai/v1';
-const LIMITE_TOKENS_PROMPT = 4000; // Llama 3.1 8B tem 6.000 TPM free
+const LIMITE_TOKENS_PROMPT = 2500; // margem segura para 6.000 TPM (reserva 3500 para tools+resposta)
 
 function obterApiKey() {
   return process.env.GROQ_API_KEY || '';
@@ -8,7 +8,7 @@ function obterApiKey() {
 // Estimativa simples: ~4 caracteres por token (inglês/código)
 function estimarTokens(texto) {
   if (!texto) return 0;
-  return Math.ceil(texto.length / 4);
+  return Math.ceil(texto.length / 3);
 }
 
 function truncarMensagens(mensagens, limiteTokens) {
@@ -60,7 +60,7 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
 
   // Trunca mensagens se exceder limite de tokens do free tier
   const mensagensTratadas = truncarMensagens(mensagens, LIMITE_TOKENS_PROMPT);
-  const maxTokensResposta = Math.min(parametros.max_tokens ?? 1500, 2000);
+  const maxTokensResposta = Math.min(parametros.max_tokens ?? 1000, 1500);
 
   const bodyPayload = {
     model: modelo,
@@ -70,11 +70,15 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
   };
 
   // Repassa tools e tool_choice para Groq (necessario para Cline/Continue)
-  if (parametros.tools) {
+  // Mas so se o total de tokens nao estourar o limite
+  const toolsTokens = parametros.tools ? estimarTokens(JSON.stringify(parametros.tools)) : 0;
+  const tokensDisponiveis = LIMITE_TOKENS_PROMPT - toolsTokens;
+  
+  if (parametros.tools && toolsTokens < LIMITE_TOKENS_PROMPT * 0.6) {
     bodyPayload.tools = parametros.tools;
-  }
-  if (parametros.tool_choice) {
-    bodyPayload.tool_choice = parametros.tool_choice;
+    if (parametros.tool_choice) {
+      bodyPayload.tool_choice = parametros.tool_choice;
+    }
   }
 
   const resposta = await fetch(`${GROQ_URL}/chat/completions`, {
@@ -98,6 +102,26 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
   // Extrai conteúdo e tool_calls
   let conteudo = choice?.message?.content || '';
   let toolCalls = choice?.message?.tool_calls || null;
+
+  // Normaliza tool_calls para formato OpenAI (necessario para Cline)
+  if (toolCalls && toolCalls.length > 0) {
+    toolCalls = toolCalls.map((tc, i) => ({
+      id: tc.id || `call_${Date.now()}_${i}`,
+      type: 'function',
+      function: {
+        name: tc.function?.name || 'unknown',
+        // arguments DEVE ser string (OpenAI spec)
+        arguments: typeof tc.function?.arguments === 'string'
+          ? tc.function.arguments
+          : JSON.stringify(tc.function?.arguments || {}),
+      },
+    }));
+  }
+
+  // Se content vier null mas tem tool_calls, content deve ser null (nao string vazia)
+  if (toolCalls && !conteudo) {
+    conteudo = null;
+  }
 
   // Se ainda estiver vazio e sem tool_calls, retorna mensagem de erro útil
   if (!conteudo && !toolCalls) {
