@@ -62,18 +62,28 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
   const mensagensTratadas = truncarMensagens(mensagens, LIMITE_TOKENS_PROMPT);
   const maxTokensResposta = Math.min(parametros.max_tokens ?? 3000, 4096);
 
+  const bodyPayload = {
+    model: modelo,
+    messages: mensagensTratadas,
+    temperature: parametros.temperature ?? 0.2,
+    max_tokens: maxTokensResposta,
+  };
+
+  // Repassa tools e tool_choice para Groq (necessario para Cline/Continue)
+  if (parametros.tools) {
+    bodyPayload.tools = parametros.tools;
+  }
+  if (parametros.tool_choice) {
+    bodyPayload.tool_choice = parametros.tool_choice;
+  }
+
   const resposta = await fetch(`${GROQ_URL}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: modelo,
-      messages: mensagensTratadas,
-      temperature: parametros.temperature ?? 0.2,
-      max_tokens: maxTokensResposta,
-    }),
+    body: JSON.stringify(bodyPayload),
   });
 
   if (!resposta.ok) {
@@ -84,29 +94,19 @@ async function chatCompletion(modelo, mensagens, parametros = {}) {
   const dados = await resposta.json();
   const choice = dados.choices?.[0];
 
-  // Extrai conteúdo - verifica content e tool_calls
+  // Extrai conteúdo e tool_calls
   let conteudo = choice?.message?.content || '';
-  
-  // Se content vier vazio mas tem tool_calls, formata como texto
-  if (!conteudo && choice?.message?.tool_calls?.length) {
-    conteudo = choice.message.tool_calls
-      .map(tc => {
-        const args = typeof tc.function?.arguments === 'string'
-          ? tc.function.arguments
-          : JSON.stringify(tc.function?.arguments || {});
-        return `${tc.function?.name || 'call'}: ${args}`;
-      })
-      .join('\n');
-  }
+  let toolCalls = choice?.message?.tool_calls || null;
 
-  // Se ainda estiver vazio, retorna mensagem de erro útil
-  if (!conteudo) {
+  // Se ainda estiver vazio e sem tool_calls, retorna mensagem de erro útil
+  if (!conteudo && !toolCalls) {
     console.warn('Resposta vazia da Groq:', JSON.stringify(dados).substring(0, 500));
     conteudo = 'Desculpe, não consegui gerar uma resposta. Tente reformular sua pergunta.';
   }
 
   return {
     conteudo: conteudo,
+    tool_calls: toolCalls,
     modelo: dados.model || modelo,
     tokens_total: dados.usage?.total_tokens || 0,
     tokens_prompt: dados.usage?.prompt_tokens || 0,

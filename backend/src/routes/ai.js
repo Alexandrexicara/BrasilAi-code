@@ -9,7 +9,7 @@ router.use('/v1', authApiKey);
 // POST /v1/chat/completions - Compatível com OpenAI
 router.post('/v1/chat/completions', async (req, res) => {
   const inicio = performance.now();
-  const { messages, model, temperature, max_tokens } = req.body;
+  const { messages, model, temperature, max_tokens, tools, tool_choice } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Campo "messages" obrigatório' });
@@ -21,6 +21,8 @@ router.post('/v1/chat/completions', async (req, res) => {
       modelo: modeloLimpo,
       temperature: temperature ?? 0.2,
       max_tokens: max_tokens ?? 4096,
+      tools: tools,
+      tool_choice: tool_choice,
     });
 
     const tempoMs = Math.round(performance.now() - inicio);
@@ -32,7 +34,15 @@ router.post('/v1/chat/completions', async (req, res) => {
       status: 'ok',
     });
 
-    // Formato OpenAI-compatible
+    // Formato OpenAI-compatible (com suporte a tool_calls)
+    const message = {
+      role: 'assistant',
+      content: resultado.conteudo,
+    };
+    if (resultado.tool_calls) {
+      message.tool_calls = resultado.tool_calls;
+    }
+
     res.json({
       id: `chatcmpl-${Date.now()}`,
       object: 'chat.completion',
@@ -41,11 +51,8 @@ router.post('/v1/chat/completions', async (req, res) => {
       choices: [
         {
           index: 0,
-          message: {
-            role: 'assistant',
-            content: resultado.conteudo,
-          },
-          finish_reason: 'stop',
+          message: message,
+          finish_reason: resultado.tool_calls ? 'tool_calls' : 'stop',
         },
       ],
       usage: {
