@@ -29,7 +29,7 @@ export default function Plans() {
     setLoading(true);
     setMessage('');
     try {
-      const { data } = await api.post('/subscription/pay', { planIndex, method: 'pix' });
+      const { data } = await api.post('/subscriptions/pay', { planIndex, method: 'pix' });
       setPixModal(data);
       // Inicia polling para verificar pagamento
       startPolling(data.paymentId);
@@ -44,7 +44,7 @@ export default function Plans() {
     setLoading(true);
     setMessage('');
     try {
-      const { data } = await api.post('/subscription/pay', { planIndex, method: 'link' });
+      const { data } = await api.post('/subscriptions/pay', { planIndex, method: 'link' });
       window.open(data.url, '_blank');
       setMessage('🔗 Link de pagamento aberto em nova aba!');
     } catch (err) {
@@ -58,7 +58,7 @@ export default function Plans() {
     setChecking(true);
     const interval = setInterval(async () => {
       try {
-        const { data } = await api.get(`/subscription/payment/${paymentId}`);
+        const { data } = await api.get(`/subscriptions/payment/${paymentId}`);
         if (data.aprovado) {
           clearInterval(interval);
           setChecking(false);
