@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function Plans() {
   const [plans, setPlans] = useState([]);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/plans').then(({ data }) => setPlans(data));
@@ -13,7 +14,8 @@ export default function Plans() {
   const handleSubscribe = async (index) => {
     try {
       await api.post('/subscription/contratar', { planIndex: index });
-      setMessage('✅ Plano contratado!');
+      setMessage('✅ Plano contratado! Redirecionando...');
+      setTimeout(() => navigate('/dashboard'), 1500);
     } catch {
       setMessage('❌ Erro ao contratar');
     }

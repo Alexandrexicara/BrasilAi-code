@@ -18,7 +18,8 @@ export default function Register() {
     try {
       const { data } = await api.post('/auth/register', { name, email, password });
       localStorage.setItem('token', data.token);
-      navigate('/dashboard');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/plans');
     } catch (err) {
       const msg = err.response?.data?.error || 'Erro ao cadastrar. Tente novamente.';
       setError(msg);

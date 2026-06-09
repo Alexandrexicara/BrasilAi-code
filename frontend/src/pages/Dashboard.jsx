@@ -6,6 +6,8 @@ export default function Dashboard() {
   const [sub, setSub] = useState(null);
   const [copied, setCopied] = useState('');
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = user.role === 'admin';
 
   const configYaml = `name: Brasil CodeAI
 version: 1.0.0
@@ -37,6 +39,7 @@ Model ID: meta-llama/llama-4-scout-17b-16e-instruct`;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 
@@ -47,7 +50,7 @@ Model ID: meta-llama/llama-4-scout-17b-16e-instruct`;
         <div>
           <Link to="/plans" style={styles.link}>Planos</Link>
           <Link to="/apikeys" style={styles.link}>API Keys</Link>
-          <Link to="/admin" style={styles.adminLink}>🔐 Admin</Link>
+          {isAdmin && <Link to="/admin" style={styles.adminLink}>🔐 Admin</Link>}
           <button onClick={handleLogout} style={styles.logout}>Sair</button>
         </div>
       </nav>

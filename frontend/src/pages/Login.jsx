@@ -17,7 +17,13 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', data.token);
-      navigate('/dashboard');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      // Admin vai para /admin, usuario vai para /dashboard
+      if (data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       const msg = err.response?.data?.error || 'Email ou senha inválidos';
       setError(msg);
