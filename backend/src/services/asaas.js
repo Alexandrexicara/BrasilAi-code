@@ -5,7 +5,9 @@
 const ASAAS_URL = 'https://api.asaas.com/v3';
 
 function getToken() {
-  return process.env.ASAAS_TOKEN;
+  const token = process.env.ASAAS_TOKEN || '';
+  // Remove aspas se o Render adicionar
+  return token.replace(/^"|"$/g, '').trim();
 }
 
 function headers() {
