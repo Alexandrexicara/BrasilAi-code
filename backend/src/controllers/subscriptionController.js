@@ -31,9 +31,19 @@ const subscriptionController = {
         return res.status(400).json({ error: 'Plano inválido' });
       }
 
+      // Verifica se token Asaas esta configurado
+      if (!process.env.ASAAS_TOKEN) {
+        return res.status(500).json({ error: 'Gateway de pagamento não configurado (ASAAS_TOKEN)' });
+      }
+
       // Busca dados do usuario
-      const userResult = await db.pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
-      const user = userResult.rows[0];
+      let user;
+      try {
+        const userResult = await db.pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+        user = userResult.rows[0];
+      } catch (dbErr) {
+        return res.status(500).json({ error: `Erro no banco: ${dbErr.message}` });
+      }
 
       if (!user) {
         return res.status(404).json({ error: 'Usuário não encontrado' });
