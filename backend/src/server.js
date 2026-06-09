@@ -56,6 +56,7 @@ app.use('/api-keys', require('./routes/apiKeys'));
 app.use('/subscriptions', require('./routes/subscriptions'));
 app.use('/plans', require('./routes/plans'));
 app.use('/admin', require('./routes/adminRoutes'));
+app.use('/webhooks', require('./routes/webhooks'));
 
 // Health check
 app.get('/health', async (req, res) => {
@@ -91,6 +92,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   logger.info(`GROQ_API_KEY: ${process.env.GROQ_API_KEY ? '✓ configurada' : '✗ NÃO configurada'}`);
   logger.info(`JWT_SECRET: ${process.env.JWT_SECRET ? '✓ configurado' : '✗ NÃO configurado'}`);
   logger.info(`DATABASE_URL: ${process.env.DATABASE_URL ? '✓ configurada' : '✗ NÃO configurada'}`);
+  logger.info(`ASAAS_TOKEN: ${process.env.ASAAS_TOKEN ? '✓ configurado' : '✗ NÃO configurado'}`);
   logger.info(`Frontend build: ${fs.existsSync(path.join(__dirname, '..', 'public', 'index.html')) ? '✓ encontrado' : '✗ não buildado'}`);
 
   if (process.env.DATABASE_URL) {
