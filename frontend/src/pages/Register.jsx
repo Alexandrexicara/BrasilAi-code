@@ -5,18 +5,27 @@ import api from '../services/api';
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const formatCpf = (value) => {
+    const nums = value.replace(/\D/g, '').slice(0, 14);
+    if (nums.length <= 11) {
+      return nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    return nums.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/register', { name, email, password });
+      const { data } = await api.post('/auth/register', { name, email, password, cpf_cnpj: cpf.replace(/\D/g, '') });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/plans');
@@ -48,6 +57,15 @@ export default function Register() {
           onChange={(e) => setEmail(e.target.value)}
           style={styles.input}
           required
+        />
+        <input
+          type="text"
+          placeholder="CPF ou CNPJ"
+          value={cpf}
+          onChange={(e) => setCpf(formatCpf(e.target.value))}
+          style={styles.input}
+          required
+          maxLength={18}
         />
         <div style={styles.passwordWrapper}>
           <input

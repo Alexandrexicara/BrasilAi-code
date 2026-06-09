@@ -33,6 +33,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     role VARCHAR(20) DEFAULT 'user',
     language VARCHAR(10) DEFAULT 'pt-BR',
+    cpf_cnpj VARCHAR(20),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -66,3 +67,7 @@ INSERT INTO plans (name, days, price) VALUES
     ('Quinzenal', 15, 60.00),
     ('Mensal', 30, 100.00)
 ON CONFLICT (id) DO NOTHING;
+
+-- Adiciona coluna cpf_cnpj se nao existir
+ALTER TABLE users ADD COLUMN IF NOT EXISTS cpf_cnpj VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'pt-BR';

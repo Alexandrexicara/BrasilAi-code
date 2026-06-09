@@ -49,8 +49,8 @@ const subscriptionController = {
         return res.status(404).json({ error: 'Usuário não encontrado' });
       }
 
-      // Cria ou busca cliente no Asaas
-      const cliente = await asaas.criarOuCriarCliente(user.name, user.email);
+      // Cria ou busca cliente no Asaas (com CPF/CNPJ)
+      const cliente = await asaas.criarOuCriarCliente(user.name, user.email, user.cpf_cnpj);
       const descricao = `Plano ${plano.nome} - planId ${plano.id} userId ${req.userId}`;
 
       if (method === 'pix') {

@@ -6,7 +6,7 @@ const db = require('../database/db');
 const authController = {
   async register(req, res) {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, cpf_cnpj } = req.body;
 
       // Validação de entrada
       if (!name || !email || !password) {
@@ -32,7 +32,7 @@ const authController = {
         return res.status(400).json({ error: 'Email já cadastrado' });
       }
 
-      const user = await User.create(name.trim(), email.toLowerCase().trim(), password);
+      const user = await User.create(name.trim(), email.toLowerCase().trim(), password, cpf_cnpj || null);
       
       // Primeiro usuário vira admin automaticamente
       const userCount = await db.pool.query('SELECT COUNT(*) FROM users');
